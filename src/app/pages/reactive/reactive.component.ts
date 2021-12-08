@@ -14,6 +14,7 @@ export class ReactiveComponent implements OnInit {
   constructor(private fb: FormBuilder, private validators: ValidatorsService) {
     this.createForm();
     this.loadDataToForm();
+    this.createListeners();
   }
 
   ngOnInit(): void {
@@ -36,6 +37,11 @@ export class ReactiveComponent implements OnInit {
   get invalidEmail() {
     let email = this.form.get('email');
     return email!.invalid && email!.touched
+  }
+
+  get invalidUser() {
+    let user = this.form.get('user');
+    return user!.invalid && user!.touched
   }
 
   get invalidDistrict() {
@@ -64,6 +70,7 @@ export class ReactiveComponent implements OnInit {
       name: ['', [Validators.required, Validators.minLength(5)]],
       last_name: ['', [Validators.required, Validators.minLength(5), this.validators.noParra]],
       email: ['', [Validators.required, Validators.pattern('[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$')]],
+      user: ['', Validators.required, this.validators.userExists],
       password1: ['', [Validators.required]],
       password2: ['', [Validators.required]],
       address: this.fb.group({
@@ -74,6 +81,12 @@ export class ReactiveComponent implements OnInit {
     }, {
       validators: this.validators.samePasswords('password1', 'password2')
     });
+  }
+
+  createListeners() {
+
+    this.form.valueChanges.subscribe(value => console.log(value));
+    this.form.statusChanges.subscribe(status => console.log(status));
   }
 
   loadDataToForm() {
